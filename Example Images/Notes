@@ -1,0 +1,117 @@
+===================================================================
+
+HardDisk    --- The given demo hard disk image
+
+TestImage   --- The given demo floppy image
+
+RandomDisk  --- Disk-sized garbage
+	#include <stdio.h>
+	int main() {
+	  int i;
+	  srandom(time(NULL));
+	  for(i=0;i<(1440*1024);i++){
+	    putchar(random());
+	  }
+	  return 0;
+	}
+	% a.out > RandomDisk	
+
+BlankDisk   --- Fresh filesystem with default parameters
+    dd if=/dev/zero of=BlankDisk bs=1024 count=1440
+    minix# mkfs /dev/fd0
+
+SmallBlocks--1k
+    minix# mkfs -B 1024 /dev/fd0
+    contents:
+      DirOne
+        FileOne
+        FileTwo
+      DirTwo
+        FileTwo
+        FileOne
+
+BigBlocks-16k
+    minix# mkfs -B 16384 /dev/fd0
+    Empty
+	
+BigZones-16k
+    linux% minmkfs -z 2 testfloppy
+    contents:
+      DirOne
+        FileOne
+        FileTwo
+      DirTwo
+        FileTwo
+        FileOne
+
+ReallyBigZones-64k
+    linux% minmkfs -z 4 testfloppy
+    contents:
+      DirOne
+        FileOne
+        FileTwo
+      DirTwo
+        FileTwo
+        FileOne
+
+Files
+  drwx------       128 Files         
+     drwx------       128 .             
+     drwxrwxrwx        80 ..            
+     -rw-r--r--         0 000_Zones     
+     -rw-------      1024 001_Zone      
+     -rw-------      7168 007_Zones     
+     -rw-------     10240 010_Zones     
+     -rw-------    269312 263_Zones     
+     -rw-------    307200 300_Zones     
+  drwx------       352 Deleted       
+    drwx------       352 .             
+    drwxrwxrwx        80 ..            
+    -rw-------        16 File-01       
+    -rw-------        16 File-03       
+    -rw-------        16 File-05       
+    -rw-------        16 File-07       
+    -rw-------        16 File-08       
+    -rw-------        16 File-09       
+    -rw-------        16 File-10       
+  drwx------       112 Permissions
+  	<some files w/different perms>
+
+  drwx------       112 DeepPaths     
+    drwx------       112 .             
+    drwxrwxrwx        80 ..            
+    drwx------        48 a             
+    drwx------        48 Distraction   
+    -rw-------        41 Message       
+  	DeepPaths/a/b/c/d/e/f/g/h/Files/Message
+  	DeepPaths/a/b/c/d/e/i/j/k/Files/Message
+
+   Holes (on Files)
+
+Partitioned
+   All four primary partitions are valid
+
+WeirdStuff
+   This contains a Symlink that minget should reject and an ordinary
+   file that just happens to have valid directory info in it that both
+   minget and minls should refuse to traverse.
+
+BrokenStuff
+   This disk has all sorts of troubling things on it:
+
+   The main partition table is valid
+
+     Boot head  sec  cyl Type head  sec  cyl      First       Size
+     0x80    0    2    0 0xdb    0   17   24          1        880
+     0x00    0   18   24 0x81    0    9   52        881       1000
+     0x00    0   10   52 0x81    1   17   79       1881        998
+     0x00    0    0    0 0x00    0    0    0          0          0
+
+   p0 contains a minix filesystem, but is not marked as type 0x81
+   p1 contains a minix filesystem, but the superblock magic number is wrong
+      (address should be 881*512 + 1024(0x6e600))
+   p2 contains a functional subpartition table (FS in s0), but the
+         partition table magic number is not present.
+      (address should be 1881*512 + 510 (0xeb3fe))
+
+   

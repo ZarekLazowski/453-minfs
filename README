@@ -1,0 +1,43 @@
+Zarek Lazowski
+
+USER INFO:
+Provided are two programs, minls and minget. 
+
+minls is used to peruse a minix file system and look at its contents.
+
+minget is used once you have a file destination in mind and would like to
+copy it over to your desktop environment.
+
+This was created in a virtual Ubuntu x86 environment, and is not intended
+to run outside of a unix-based system.
+
+INSTRUCTIONS:
+The provided makefile creates minls and minget executables.
+
+Minix file system images are provided in 'Example Images'. 
+
+Both minls and minget provide proper usage information upon incorrect
+provided arguments, or by providing the '?' argument.
+
+ISSUES:
+When reading the root directory of TestImage, I get tons of "deleteme"
+file entries, all with an inode of 0. So I ignore them, but this puts my
+programs in a (seemingly) infinite loop. Not sure where the other files in
+that directory are, but they are pretty well hidden.
+
+OTHER THOUGHTS:
+This project started out rocky but I kinda got there in the end. My first
+major hurdle was trying to figure out the partition table. I soon learned that
+the signature isn't at at 510 offset from the beginning of the partition
+table, but instead a 510 offset from the beginning of the file/partition.
+
+After that I spent a lot of time (see also: too much) on figuring out how to
+deal with indirect/double indirect blocks. I had wanted to just read
+every zone number into a list and return that, but it was really hard to
+wrap my head around. I decided to just translate the linear zone numbers
+into actual zone numbers, like you originally suggested.
+
+I'm not incredibly happy with how the programs turned out, if I had more time
+(and less final projects to work on) I would've fleshed out a couple things
+and done more extensive tests. But now I can show people what indirect
+zones are and tell them that I solved them, so I have that going for me
